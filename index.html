@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#b8292f" />
+    <title>一對一紅包功能原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app-main">跳到主要內容</a>
+
+    <div class="prototype-layout">
+      <div class="phone" id="app-shell" data-perspective="sender">
+        <header class="app-bar" aria-label="頁首">
+          <button
+            class="icon-button app-back"
+            id="app-back"
+            type="button"
+            data-action="nav:back"
+            aria-label="返回上一頁"
+            hidden
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+          <div class="app-bar__title-group">
+            <p class="app-bar__eyebrow" id="perspective-label">發送方視角</p>
+            <h1 class="app-bar__title" id="view-title">阿凱</h1>
+          </div>
+          <button
+            class="icon-button"
+            id="open-history"
+            type="button"
+            data-action="history:open"
+            aria-label="開啟紅包紀錄"
+          >
+            <span aria-hidden="true">紀</span>
+          </button>
+        </header>
+
+        <main id="app-main" class="app-main" tabindex="-1">
+          <section class="view view--chat" id="view-chat" data-view="chat" aria-labelledby="view-title">
+            <div class="conversation" id="chat-messages" aria-live="polite">
+              <p class="date-divider">今天</p>
+              <div class="chat-placeholder" id="chat-empty">
+                <span class="avatar" aria-hidden="true">凱</span>
+                <p id="chat-placeholder-text">這裡是與阿凱的一對一聊天室。</p>
+              </div>
+
+              <article
+                class="red-packet-card red-packet-card--sent"
+                id="sender-card"
+                data-role="sender-card"
+                data-packet-id=""
+                hidden
+              >
+                <button class="red-packet-card__tap" type="button" data-action="packet:open" aria-label="查看送出的紅包">
+                  <span class="packet-icon" aria-hidden="true"><span>福</span></span>
+                  <span class="red-packet-card__content">
+                    <strong data-field="headline">你送出一個紅包</strong>
+                    <span class="red-packet-card__amount" data-field="amount">NT$ 0</span>
+                    <span data-field="party">給阿凱</span>
+                    <span class="status-line"><span data-field="status">待領取</span><time data-field="time">--:--</time></span>
+                  </span>
+                </button>
+              </article>
+
+              <article
+                class="red-packet-card red-packet-card--received"
+                id="receiver-card"
+                data-role="receiver-card"
+                data-packet-id=""
+                hidden
+              >
+                <button class="red-packet-card__tap" type="button" data-action="packet:open" aria-label="查看收到的紅包">
+                  <span class="packet-icon" aria-hidden="true"><span>福</span></span>
+                  <span class="red-packet-card__content">
+                    <strong data-field="headline">收到一個紅包</strong>
+                    <span class="red-packet-card__amount" data-field="amount">NT$ 0</span>
+                    <span data-field="party">來自小晴</span>
+                    <span class="status-line"><span data-field="status">可領取</span><time data-field="time">--:--</time></span>
+                  </span>
+                </button>
+              </article>
+            </div>
+
+            <div class="composer" aria-label="聊天室功能">
+              <div class="action-menu" id="action-menu" hidden>
+                <button class="action-menu__item" type="button" disabled aria-label="相片功能，原型未提供">
+                  <span class="action-menu__icon" aria-hidden="true">相</span>
+                  <span>相片</span>
+                </button>
+                <button class="action-menu__item" id="open-send" type="button" data-action="entry:open">
+                  <span class="action-menu__icon action-menu__icon--packet" aria-hidden="true">福</span>
+                  <span>紅包</span>
+                </button>
+              </div>
+              <button
+                class="icon-button composer__plus"
+                id="open-actions"
+                type="button"
+                data-action="menu:toggle"
+                aria-label="開啟聊天室功能選單"
+                aria-controls="action-menu"
+                aria-expanded="false"
+              >
+                <span aria-hidden="true">＋</span>
+              </button>
+              <p class="composer__hint">點「＋」開啟功能</p>
+            </div>
+          </section>
+
+          <section class="view form-view" id="view-amount" data-view="amount" aria-labelledby="amount-heading" hidden>
+            <div class="view-card">
+              <div class="recipient-lockup">
+                <span class="avatar avatar--large" aria-hidden="true">凱</span>
+                <div>
+                  <p>發紅包給</p>
+                  <h2 id="amount-heading"><span id="amount-recipient">阿凱</span></h2>
+                </div>
+              </div>
+              <p class="view-lead">請輸入要發送的金額</p>
+              <label class="amount-field" for="amount-input">
+                <span>NT$</span>
+                <input
+                  id="amount-input"
+                  name="amount"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  autocomplete="off"
+                  placeholder="0"
+                  aria-describedby="amount-help amount-error"
+                />
+              </label>
+              <div class="field-meta">
+                <span id="amount-help">僅可輸入正整數</span>
+                <span>餘額 <strong id="balance-display">NT$ 20,000</strong></span>
+              </div>
+              <p class="field-error" id="amount-error" role="alert" hidden></p>
+            </div>
+            <div class="view-actions">
+              <button class="button button--primary" id="amount-next" type="button" data-action="send:start">
+                <span class="button__label">確認發送</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button class="button button--secondary" id="exit-current" type="button" data-action="exit:confirm">取消</button>
+            </div>
+          </section>
+
+          <section class="view form-view" id="view-confirm" data-view="confirm" aria-labelledby="confirm-heading" hidden>
+            <div class="view-card view-card--centered">
+              <span class="packet-hero" aria-hidden="true"><span>福</span></span>
+              <p class="kicker">發送確認</p>
+              <h2 id="confirm-heading">
+                確定要送 <strong id="confirm-amount">NT$ 0</strong> 的紅包給
+                <strong id="confirm-recipient">阿凱</strong>嗎？
+              </h2>
+            </div>
+            <div class="view-actions">
+              <button class="button button--primary" id="confirm-send" type="button" data-action="send:confirm">
+                <span class="button__label">確認</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button class="button button--secondary" type="button" data-action="nav:back">取消</button>
+            </div>
+          </section>
+
+          <section class="view form-view" id="view-verify" data-view="verify" aria-labelledby="verify-heading" hidden>
+            <div class="view-card view-card--centered">
+              <span class="secure-mark" aria-hidden="true">安</span>
+              <h2 id="verify-heading">請完成支付驗證</h2>
+              <p>輸入 4 位數支付驗證碼</p>
+              <label class="sr-only" for="verify-input">支付驗證碼</label>
+              <input
+                class="pin-input"
+                id="verify-input"
+                name="verificationCode"
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="4"
+                autocomplete="one-time-code"
+                aria-describedby="verify-error"
+              />
+              <p class="field-error" id="verify-error" role="alert" hidden></p>
+            </div>
+            <div class="view-actions">
+              <button class="button button--primary" id="verify-submit" type="button" data-action="send:verify">
+                <span class="button__label">確定</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button class="button button--secondary" type="button" data-action="nav:back">取消</button>
+            </div>
+          </section>
+
+          <section class="view result-view" id="view-sent" data-view="sent" aria-labelledby="sent-heading" hidden>
+            <div class="celebration" aria-hidden="true">
+              <i></i><i></i><i></i>
+              <span class="packet-hero packet-hero--large"><span>福</span></span>
+            </div>
+            <p class="kicker">紅包已送出</p>
+            <h2 id="sent-heading">發送成功！</h2>
+            <p class="result-copy">已送出 <strong id="sent-amount">NT$ 0</strong></p>
+            <button class="button button--primary" id="back-chat" type="button" data-action="nav:chat">返回聊天室</button>
+          </section>
+
+          <section class="view result-view" id="view-receive" data-view="receive" aria-labelledby="receive-heading" hidden>
+            <span class="packet-hero packet-hero--large packet-hero--gift" aria-hidden="true"><span>福</span></span>
+            <p class="kicker">收到紅包</p>
+            <h2 id="receive-heading">收到小晴給你的 NT$ 0 紅包</h2>
+            <p class="status-pill" id="receive-status" role="status" hidden></p>
+            <div class="result-actions">
+              <button class="button button--primary" id="claim-button" type="button" data-action="packet:claim">
+                <span class="button__label">領取紅包</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button class="button button--secondary" id="receive-back-chat" type="button" data-action="nav:chat">返回聊天室</button>
+            </div>
+          </section>
+
+          <section class="view result-view" id="view-sender-final" data-view="sender-final" aria-labelledby="sender-final-heading" hidden>
+            <span class="status-illustration" aria-hidden="true">✓</span>
+            <p class="kicker">紅包狀態</p>
+            <h2 id="sender-final-heading">已完成</h2>
+            <p class="result-copy" id="sender-detail-description">阿凱已領取你的 NT$ 0 紅包</p>
+            <p class="status-pill" id="sender-detail-status" role="status">紅包已領取</p>
+            <button class="button button--primary" type="button" data-action="nav:chat">確定</button>
+          </section>
+
+          <section class="view result-view" id="view-sender-pending" data-view="sender-pending" aria-labelledby="sender-pending-heading" hidden>
+            <span class="packet-hero packet-hero--large" aria-hidden="true"><span>福</span></span>
+            <p class="kicker">等待領取</p>
+            <h2 id="sender-pending-heading">紅包尚未被領取</h2>
+            <p class="result-copy" id="recall-description">送給阿凱的 NT$ 0 紅包尚未被領取</p>
+            <div class="result-actions">
+              <button class="button button--danger" id="recall-button" type="button" data-action="packet:recall">
+                <span class="button__label">收回紅包</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button class="button button--secondary" type="button" data-action="nav:chat">返回聊天室</button>
+            </div>
+          </section>
+
+          <section class="view list-view" id="view-history" data-view="history" aria-labelledby="history-heading" hidden>
+            <div class="section-heading">
+              <div>
+                <p class="kicker">帳戶</p>
+                <h2 id="history-heading">紅包紀錄</h2>
+              </div>
+              <strong class="balance-badge" id="history-balance">NT$ 20,000</strong>
+            </div>
+            <div class="history-list" id="history-list" aria-live="polite"></div>
+            <div class="empty-state" id="history-empty" hidden>
+              <span aria-hidden="true">簿</span>
+              <p>目前沒有紅包紀錄</p>
+            </div>
+          </section>
+
+          <section class="view detail-view" id="view-record" data-view="record" aria-labelledby="record-heading" hidden>
+            <div class="section-heading">
+              <div>
+                <p class="kicker">紅包紀錄</p>
+                <h2 id="record-heading">單筆紀錄</h2>
+              </div>
+              <span class="status-pill status-pill--compact" id="record-status">待領取</span>
+            </div>
+            <dl class="record-list">
+              <div><dt>交易類型</dt><dd id="record-type">發送</dd></div>
+              <div><dt>金額</dt><dd id="record-amount">NT$ 0</dd></div>
+              <div><dt>互動對象</dt><dd id="record-party">阿凱</dd></div>
+              <div><dt>交易時間</dt><dd id="record-time">--</dd></div>
+              <div><dt>帳戶餘額</dt><dd id="record-balance">NT$ 20,000</dd></div>
+              <div><dt>交易狀態</dt><dd id="record-state">待領取</dd></div>
+            </dl>
+            <div class="view-actions view-actions--inline">
+              <button class="button button--danger" id="record-recall" type="button" data-action="packet:recall" hidden>
+                <span class="button__label">收回紅包</span><span class="spinner" aria-hidden="true"></span>
+              </button>
+              <button class="button button--secondary" type="button" data-action="history:open">返回</button>
+            </div>
+          </section>
+
+          <section class="view result-view" id="view-error" data-view="error" aria-labelledby="error-heading" hidden>
+            <span class="status-illustration status-illustration--muted" aria-hidden="true">!</span>
+            <h2 id="error-heading">找不到內容</h2>
+            <p class="result-copy" id="error-message">暫時無法顯示，請稍後再試</p>
+            <button class="button button--primary" type="button" data-action="nav:back">返回</button>
+          </section>
+        </main>
+      </div>
+
+      <aside class="prototype-tools" aria-labelledby="tools-heading">
+        <div class="prototype-tools__heading">
+          <div>
+            <p class="kicker">僅供驗證</p>
+            <h2 id="tools-heading">原型測試工具</h2>
+          </div>
+          <span class="prototype-tools__tag">TEST</span>
+        </div>
+
+        <fieldset class="tool-group">
+          <legend>切換視角</legend>
+          <div class="segmented" id="perspective-switch">
+            <button class="segmented__button is-active" type="button" data-action="perspective:set" data-value="sender" aria-pressed="true">小晴・發送方</button>
+            <button class="segmented__button" type="button" data-action="perspective:set" data-value="recipient" aria-pressed="false">阿凱・接收方</button>
+          </div>
+        </fieldset>
+
+        <div class="tool-row">
+          <div>
+            <label for="feature-enabled"><strong>紅包功能</strong></label>
+            <p id="feature-description">停用後測試無法使用狀態</p>
+          </div>
+          <label class="switch">
+            <input id="feature-enabled" type="checkbox" data-action="feature:set" data-feature-key="recipientServiceEnabled" aria-describedby="feature-description" checked />
+            <span aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <div class="tool-group">
+          <strong class="tool-label">時間快轉</strong>
+          <p class="tool-note">測試紅包逾期狀態</p>
+          <button class="button button--compact button--full" id="advance-time" type="button" data-action="time:advance" data-hours="72">快轉至發送後 72 小時</button>
+        </div>
+
+        <div class="test-code" aria-label="付款測試碼">
+          <span>付款測試碼</span>
+          <output id="payment-test-code">1234</output>
+        </div>
+        <p class="tool-clock" id="prototype-clock" aria-live="polite">目前時間：--</p>
+      </aside>
+    </div>
+
+    <div class="modal-backdrop" id="modal" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
+        <span class="modal__mark" aria-hidden="true">!</span>
+        <h2 id="modal-title">提示</h2>
+        <p id="modal-message"></p>
+        <div class="modal__actions">
+          <button class="button button--secondary" id="modal-cancel" type="button" data-action="modal:cancel">取消</button>
+          <button class="button button--primary" id="modal-confirm" type="button" data-action="modal:confirm">確定</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="sr-only" id="loading-announcer" role="status" aria-live="assertive"></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
