@@ -188,6 +188,11 @@ a:focus-visible {
   line-height: 1;
 }
 
+.app-history {
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+}
+
 .app-main {
   position: relative;
   min-height: 0;
@@ -275,6 +280,13 @@ a:focus-visible {
   background: linear-gradient(145deg, #d9504e 0%, #ae252c 82%);
   border-radius: 18px;
   box-shadow: 0 9px 24px rgba(134, 35, 39, 0.24);
+}
+
+.packet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
 .red-packet-card--sent {
@@ -1118,7 +1130,7 @@ a:focus-visible {
 }
 
 .modal-backdrop {
-  position: fixed;
+  position: absolute;
   z-index: 50;
   inset: 0;
   display: grid;
@@ -1168,6 +1180,10 @@ a:focus-visible {
 
 .modal__actions .button:only-child {
   grid-column: 1 / -1;
+}
+
+.modal-backdrop[data-action-count="1"] .modal__actions {
+  grid-template-columns: 1fr;
 }
 
 .toast {

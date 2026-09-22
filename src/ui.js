@@ -93,6 +93,54 @@ function recordIdFrom(source) {
   return source?.closest?.("[data-record-id]")?.dataset.recordId || null;
 }
 
+function createPacketCard(packet, perspective) {
+  const isRecipient = perspective === "recipient";
+  const card = document.createElement("article");
+  card.className = `red-packet-card red-packet-card--${isRecipient ? "received" : "sent"}`;
+  card.dataset.packetId = packet.id ?? "";
+
+  const button = document.createElement("button");
+  button.className = "red-packet-card__tap";
+  button.type = "button";
+  button.dataset.action = "packet:open";
+  button.setAttribute("aria-label", isRecipient ? "查看收到的紅包" : "查看送出的紅包");
+
+  const icon = document.createElement("span");
+  icon.className = "packet-icon";
+  icon.setAttribute("aria-hidden", "true");
+  const iconText = document.createElement("span");
+  iconText.textContent = "福";
+  icon.append(iconText);
+
+  const content = document.createElement("span");
+  content.className = "red-packet-card__content";
+
+  const headline = document.createElement("strong");
+  headline.textContent = isRecipient ? "收到一個紅包" : "你送出一個紅包";
+
+  const amount = document.createElement("span");
+  amount.className = "red-packet-card__amount";
+  amount.textContent = formatMoney(packet.amount);
+
+  const party = document.createElement("span");
+  party.textContent = isRecipient
+    ? `來自${packet.senderName ?? "小晴"}`
+    : `給${packet.recipientName ?? "阿凱"}`;
+
+  const statusLine = document.createElement("span");
+  statusLine.className = "status-line";
+  const status = document.createElement("span");
+  status.textContent = isRecipient && packet.status === "pending" ? "可領取" : normalizedStatus(packet.status);
+  const time = document.createElement("time");
+  time.textContent = formatDate(packet.updatedAt ?? packet.createdAt, shortTime);
+  statusLine.append(status, time);
+
+  content.append(headline, amount, party, statusLine);
+  button.append(icon, content);
+  card.append(button);
+  return card;
+}
+
 /**
  * DOM-only UI adapter. Business decisions stay in app.js/domain.js.
  * `onAction` receives { type, payload, source } and may return a promise.
@@ -186,6 +234,7 @@ export function createUI({ onAction = () => undefined } = {}) {
     setText(modalConfirm, confirmLabel);
     setText(modalCancel, cancelLabel);
     setHidden(modalCancel, !showCancel);
+    modalLayer.dataset.actionCount = showCancel ? "2" : "1";
     modalLayer.hidden = false;
     document.body.style.overflow = "hidden";
     modalConfirm.focus();
@@ -267,37 +316,21 @@ export function createUI({ onAction = () => undefined } = {}) {
     setText(byId("confirm-recipient"), recipient.name ?? "阿凱");
     setText(byId("prototype-clock"), `目前時間：${formatDate(snapshot.now)}`);
 
-    const latestPacket = Array.isArray(snapshot.packets) ? snapshot.packets[0] : null;
-    renderChatPacket(latestPacket, perspective);
+    const packets = Array.isArray(snapshot.packets) ? snapshot.packets : [];
+    renderChatPackets(packets, perspective);
     return snapshot;
   }
 
-  function renderChatPacket(packet, perspective = shell?.dataset.perspective ?? "sender") {
-    const senderCard = byId("sender-card");
-    const receiverCard = byId("receiver-card");
+  function renderChatPackets(packets = [], perspective = shell?.dataset.perspective ?? "sender") {
+    const list = byId("packet-list");
     const empty = byId("chat-empty");
+    if (!list) return;
 
-    setHidden(senderCard, !packet || perspective !== "sender");
-    setHidden(receiverCard, !packet || perspective !== "recipient");
-    setHidden(empty, Boolean(packet));
-    if (!packet) return;
-
-    const isRecipient = perspective === "recipient";
-    const card = isRecipient ? receiverCard : senderCard;
-    if (!card) return;
-
-    card.dataset.packetId = packet.id ?? "";
-    setText(card.querySelector("[data-field='headline']"), isRecipient ? "收到一個紅包" : "你送出一個紅包");
-    setText(card.querySelector("[data-field='amount']"), formatMoney(packet.amount));
-    setText(
-      card.querySelector("[data-field='party']"),
-      isRecipient ? `來自${packet.senderName ?? "小晴"}` : `給${packet.recipientName ?? "阿凱"}`,
-    );
-    setText(
-      card.querySelector("[data-field='status']"),
-      isRecipient && packet.status === "pending" ? "可領取" : normalizedStatus(packet.status),
-    );
-    setText(card.querySelector("[data-field='time']"), formatDate(packet.updatedAt ?? packet.createdAt, shortTime));
+    list.replaceChildren();
+    setHidden(empty, packets.length > 0);
+    for (const packet of [...packets].reverse()) {
+      list.append(createPacketCard(packet, perspective));
+    }
   }
 
   function setDraft({ amount = 0, recipientName = "阿凱" } = {}) {

@@ -28,13 +28,13 @@
             <h1 class="app-bar__title" id="view-title">阿凱</h1>
           </div>
           <button
-            class="icon-button"
+            class="icon-button app-history"
             id="open-history"
             type="button"
             data-action="history:open"
             aria-label="開啟紅包紀錄"
           >
-            <span aria-hidden="true">紀</span>
+            <span aria-hidden="true">紀錄</span>
           </button>
         </header>
 
@@ -47,41 +47,7 @@
                 <p id="chat-placeholder-text">這裡是與阿凱的一對一聊天室。</p>
               </div>
 
-              <article
-                class="red-packet-card red-packet-card--sent"
-                id="sender-card"
-                data-role="sender-card"
-                data-packet-id=""
-                hidden
-              >
-                <button class="red-packet-card__tap" type="button" data-action="packet:open" aria-label="查看送出的紅包">
-                  <span class="packet-icon" aria-hidden="true"><span>福</span></span>
-                  <span class="red-packet-card__content">
-                    <strong data-field="headline">你送出一個紅包</strong>
-                    <span class="red-packet-card__amount" data-field="amount">NT$ 0</span>
-                    <span data-field="party">給阿凱</span>
-                    <span class="status-line"><span data-field="status">待領取</span><time data-field="time">--:--</time></span>
-                  </span>
-                </button>
-              </article>
-
-              <article
-                class="red-packet-card red-packet-card--received"
-                id="receiver-card"
-                data-role="receiver-card"
-                data-packet-id=""
-                hidden
-              >
-                <button class="red-packet-card__tap" type="button" data-action="packet:open" aria-label="查看收到的紅包">
-                  <span class="packet-icon" aria-hidden="true"><span>福</span></span>
-                  <span class="red-packet-card__content">
-                    <strong data-field="headline">收到一個紅包</strong>
-                    <span class="red-packet-card__amount" data-field="amount">NT$ 0</span>
-                    <span data-field="party">來自小晴</span>
-                    <span class="status-line"><span data-field="status">可領取</span><time data-field="time">--:--</time></span>
-                  </span>
-                </button>
-              </article>
+              <div class="packet-list" id="packet-list"></div>
             </div>
 
             <div class="composer" aria-label="聊天室功能">
@@ -283,6 +249,18 @@
             <button class="button button--primary" type="button" data-action="nav:back">返回</button>
           </section>
         </main>
+
+        <div class="modal-backdrop" id="modal" hidden>
+          <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
+            <span class="modal__mark" aria-hidden="true">!</span>
+            <h2 id="modal-title">提示</h2>
+            <p id="modal-message"></p>
+            <div class="modal__actions">
+              <button class="button button--secondary" id="modal-cancel" type="button" data-action="modal:cancel">取消</button>
+              <button class="button button--primary" id="modal-confirm" type="button" data-action="modal:confirm">確定</button>
+            </div>
+          </section>
+        </div>
       </div>
 
       <aside class="prototype-tools" aria-labelledby="tools-heading">
@@ -325,18 +303,6 @@
         </div>
         <p class="tool-clock" id="prototype-clock" aria-live="polite">目前時間：--</p>
       </aside>
-    </div>
-
-    <div class="modal-backdrop" id="modal" hidden>
-      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
-        <span class="modal__mark" aria-hidden="true">!</span>
-        <h2 id="modal-title">提示</h2>
-        <p id="modal-message"></p>
-        <div class="modal__actions">
-          <button class="button button--secondary" id="modal-cancel" type="button" data-action="modal:cancel">取消</button>
-          <button class="button button--primary" id="modal-confirm" type="button" data-action="modal:confirm">確定</button>
-        </div>
-      </section>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
